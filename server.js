@@ -7,9 +7,6 @@ const path = require('path');
 const app = express();
 app.use(bodyParser.json());
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
-
 // MongoDB connection string
 const mongoURI = 'mongodb+srv://lgup-expressvpn:Anntwan14@cluster0.3th5y6j.mongodb.net/captivePortal?retryWrites=true&w=majority&appName=Cluster0';
 
@@ -27,6 +24,15 @@ const DeviceSchema = new mongoose.Schema({
 });
 
 const Device = mongoose.model('Device', DeviceSchema);
+
+// Serve HTML files
+app.get('/captive-portal', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'CaptivePortal.html'));
+});
+
+app.get('/scanner', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'Scanner.html'));
+});
 
 // Payment endpoint
 app.post('/pay', (req, res) => {
@@ -70,3 +76,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
