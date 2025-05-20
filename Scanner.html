@@ -98,16 +98,6 @@
         margin-bottom: 24px;
     }
 
-    .wifi-icon {
-        margin-bottom: 20px;
-    }
-
-    .wifi-icon .material-icons {
-        font-size: 48px;
-        color: var(--lgup-purple);
-        animation: pulse 2s infinite;
-    }
-
     .form-container {
         margin-bottom: 24px;
     }
@@ -117,14 +107,7 @@
         text-align: left;
     }
 
-    label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        color: var(--lgup-gray);
-    }
-
-    input[type="tel"] {
+    input[type="tel"], input[type="number"] {
         width: 100%;
         padding: 16px;
         font-size: 16px;
@@ -136,23 +119,10 @@
         transition: border-color 0.3s, box-shadow 0.3s;
     }
 
-    input[type="tel"]:focus {
+    input[type="tel"]:focus, input[type="number"]:focus {
         outline: none;
         border-color: var(--lgup-purple);
         box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
-    }
-
-    .input-error {
-        border-color: var(--expressvpn-red) !important;
-        box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
-    }
-
-    .error-message {
-        display: block;
-        color: var(--expressvpn-red);
-        font-size: 12px;
-        margin-top: 4px;
-        min-height: 16px;
     }
 
     .pixel-button {
@@ -173,21 +143,6 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    .pixel-button .material-icons {
-        margin-left: 8px;
-    }
-
-    .pixel-button:hover {
-        background-color: #6A1B9A;
-        transform: translateY(-1px);
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .pixel-button:active {
-        transform: translateY(1px);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
     .pixel-footer {
         margin-top: 32px;
         font-size: 12px;
@@ -201,21 +156,6 @@
 
     .pixel-footer a:hover {
         text-decoration: underline;
-    }
-
-    @keyframes pulse {
-        0% {
-            opacity: 0.6;
-            transform: scale(0.95);
-        }
-        50% {
-            opacity: 1;
-            transform: scale(1.05);
-        }
-        100% {
-            opacity: 0.6;
-            transform: scale(0.95);
-        }
     }
 
     @media (max-width: 480px) {
@@ -247,20 +187,20 @@
         <img src="https://seeklogo.com/images/E/expressvpn-logo-AEF922E372-seeklogo.com.png" alt="ExpressVPN" class="logo-image">
       </div>
 
-      <div class="wifi-icon">
-        <span class="material-icons">wifi</span>
-      </div>
-
       <h1><span class="lgup-text">LG U+ QR Login</span></h1>
-      <p class="subtitle">Scan the QR code on your DerpFest - Pixel 9 Pro XL device to continue</p>
+      <p class="subtitle">Scan the QR code to connect</p>
 
       <div class="form-container">
         <div id="qr-reader" style="width: 100%;"></div>
         <div id="qr-reader-results" class="error-message"></div>
+        <div class="input-field">
+          <label for="payment-amount">Payment Amount (in Pesos):</label>
+          <input type="number" id="payment-amount" placeholder="Enter amount" min="1" required>
+        </div>
       </div>
 
-      <button class="pixel-button" onclick="location.reload()">
-        Rescan <span class="material-icons">autorenew</span>
+      <button class="pixel-button" id="submit-payment">
+        Submit Payment <span class="material-icons">payment</span>
       </button>
 
       <div class="pixel-footer">
@@ -271,27 +211,33 @@
 
   <script>
     const resultContainer = document.getElementById('qr-reader-results');
+    const paymentAmountInput = document.getElementById('payment-amount');
+    const submitPaymentButton = document.getElementById('submit-payment');
 
     function onScanSuccess(decodedText, decodedResult) {
       resultContainer.innerHTML = `✅ Scanned: ${decodedText}`;
-      // Optionally, redirect or send to server
-      // window.location.href = decodedText;
-      // Here you can send the scanned data to your server for processing
-      fetch('/pay', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ macAddress: decodedText, time: 3600 }) // Example: 1 hour
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(`Payment successful! Time added: ${data.time} seconds.`);
-        } else {
-          alert('Payment failed.');
-        }
-      });
+      const macAddress = decodedText;
+
+      submitPaymentButton.onclick = function() {
+        const paymentAmount = parseInt(paymentAmountInput.value);
+        const timeAllocated = Math.floor((paymentAmount / 5) * 40); // 5 pesos = 40 minutes
+
+        fetch('/pay', { // Use local server URL
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ macAddress, time: timeAllocated, phoneNumber: '1234567890' }) // Example phone number
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(`Payment successful! Time added: ${data.time} minutes.`);
+          } else {
+            alert('Payment failed.');
+          }
+        });
+      };
     }
 
     function onScanFailure(error) {
