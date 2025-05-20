@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const path = require('path');
 const { exec } = require('child_process');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,6 +23,14 @@ const Verification = mongoose.model('Verification', verificationSchema);
 
 // Middleware
 app.use(bodyParser.json());
+
+// Serve static files for frontend
+app.use(express.static(path.join(__dirname, '../')));
+
+// Serve Captive Portal.html at root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Captive Portal.html'));
+});
 
 // Phone number validation function
 function isValidPhoneNumber(phoneNumber) {
