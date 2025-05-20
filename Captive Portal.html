@@ -1,459 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LG U+ WiFi - Connect</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
-    <style>
-        /* LG U+ Themed Captive Portal - Styles */
-        :root {
-            --lgup-purple: #8A2BE2;
-            --expressvpn-red: #FF0000;
-            --lgup-black: #202124;
-            --lgup-gray: #5F6368;
-            --lgup-light-gray: #E8EAED;
-            --lgup-white: #FFFFFF;
-            --lgup-purple-light: #D8BFF9;
-            --font-family: 'Google Sans', Arial, sans-serif;
-            --border-radius: 28px;
-            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LG U+ WiFi - Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js" defer></script>
+  <style>
+    :root {
+      --lgup-purple: #8A2BE2;
+      --expressvpn-red: #FF0000;
+      --lgup-black: #202124;
+      --lgup-gray: #5F6368;
+      --lgup-light-gray: #E8EAED;
+      --lgup-white: #FFFFFF;
+      --lgup-purple-light: #D8BFF9;
+      --font-family: 'Google Sans', Arial, sans-serif;
+      --border-radius: 28px;
+      --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: var(--font-family);
-            background: linear-gradient(135deg, var(--lgup-purple-light) 0%, var(--lgup-white) 100%);
-            color: var(--lgup-black);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+    body {
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, var(--lgup-purple-light), var(--lgup-white));
+      color: var(--lgup-black);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
 
-        .captive-portal-container {
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-        }
+    .captive-portal-container {
+      width: 100%;
+      max-width: 420px;
+    }
 
-        .pixel-card {
-            background-color: var(--lgup-white);
-            border-radius: var(--border-radius);
-            padding: 32px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+    .pixel-card {
+      background: var(--lgup-white);
+      border-radius: var(--border-radius);
+      padding: 32px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      overflow: hidden;
+    }
 
-        .logo-container {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            align-items: center;
-        }
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
 
-        .logo-image {
-            height: 48px;
-            width: auto;
-            max-width: 120px;
-            object-fit: contain;
-        }
+    .logo-image {
+      height: 48px;
+      object-fit: contain;
+      max-width: 120px;
+    }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--lgup-black);
-        }
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
 
-        .lgup-text {
-            background: linear-gradient(90deg, 
-                var(--lgup-purple) 0%, 
-                var(--expressvpn-red) 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            font-weight: 700;
-        }
+    .lgup-text {
+      background: linear-gradient(90deg, var(--lgup-purple), var(--expressvpn-red));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+    }
 
-        .subtitle {
-            font-size: 16px;
-            color: var(--lgup-gray);
-            margin-bottom: 24px;
-        }
+    .subtitle {
+      font-size: 16px;
+      color: var(--lgup-gray);
+      margin-bottom: 24px;
+    }
 
-        .wifi-icon {
-            margin-bottom: 20px;
-        }
+    .wifi-icon {
+      margin-bottom: 20px;
+    }
 
-        .wifi-icon .material-icons {
-            font-size: 48px;
-            color: var(--lgup-purple);
-            animation: pulse 2s infinite;
-        }
+    .wifi-icon .material-icons {
+      font-size: 48px;
+      color: var(--lgup-purple);
+      animation: pulse 2s infinite;
+    }
 
-        .form-container {
-            margin-bottom: 24px;
-        }
+    @keyframes pulse {
+      0% { opacity: 0.6; transform: scale(0.95); }
+      50% { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 0.6; transform: scale(0.95); }
+    }
 
-        .input-field {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+    .input-field {
+      text-align: left;
+      margin-bottom: 20px;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--lgup-gray);
-        }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--lgup-gray);
+    }
 
-        input[type="tel"] {
-            width: 100%;
-            padding: 16px;
-            font-size: 16px;
-            border: 2px solid var(--lgup-light-gray);
-            border-radius: 12px;
-            background-color: var(--lgup-white);
-            color: var(--lgup-black);
-            font-family: var(--font-family);
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
+    input[type="tel"] {
+      width: 100%;
+      padding: 16px;
+      font-size: 16px;
+      border: 2px solid var(--lgup-light-gray);
+      border-radius: 12px;
+      font-family: var(--font-family);
+      color: var(--lgup-black);
+      background: var(--lgup-white);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
 
-        input[type="tel"]:focus {
-            outline: none;
-            border-color: var(--lgup-purple);
-            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
-        }
+    input[type="tel"]:focus {
+      border-color: var(--lgup-purple);
+      box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+      outline: none;
+    }
 
-        .input-error {
-            border-color: var(--expressvpn-red) !important;
-            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
-        }
+    .input-error {
+      border-color: var(--expressvpn-red) !important;
+      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
+    }
 
-        .error-message {
-            display: block;
-            color: var(--expressvpn-red);
-            font-size: 12px;
-            margin-top: 4px;
-            min-height: 16px;
-        }
+    .error-message {
+      font-size: 12px;
+      color: var(--expressvpn-red);
+      margin-top: 4px;
+      min-height: 16px;
+    }
 
-        .pixel-button {
-            background-color: var(--lgup-purple);
-            color: var(--lgup-white);
-            border: none;
-            border-radius: 24px;
-            padding: 14px 24px;
-            font-size: 16px;
-            font-family: var(--font-family);
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            transition: background-color 0.3s, transform 0.1s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+    .pixel-button {
+      background: var(--lgup-purple);
+      color: var(--lgup-white);
+      border: none;
+      border-radius: 24px;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: var(--font-family);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: auto;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s, transform 0.1s;
+    }
 
-        .pixel-button .material-icons {
-            margin-left: 8px;
-        }
+    .pixel-button:hover {
+      background: #6A1B9A;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
 
-        .pixel-button:hover {
-            background-color: #6A1B9A;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        }
+    .pixel-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
 
-        .pixel-button:active {
-            transform: translateY(1px);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
+    .info, .timer {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--lgup-gray);
+    }
 
-        .pixel-footer {
-            margin-top: 32px;
-            font-size: 12px;
-            color: var(--lgup-gray);
-        }
+    .timer {
+      font-size: 16px;
+      color: var(--lgup-purple);
+    }
 
-        .pixel-footer a {
-            color: var(--lgup-purple);
-            text-decoration: none;
-        }
+    #qrcode-container {
+      margin-top: 20px;
+      text-align: center;
+    }
 
-        .pixel-footer a:hover {
-            text-decoration: underline;
-        }
+    .pixel-footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--lgup-gray);
+    }
 
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-                transform: scale(0.95);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-            100% {
-                opacity: 0.6;
-                transform: scale(0.95);
-            }
-        }
+    .pixel-footer a {
+      color: var(--lgup-purple);
+      text-decoration: none;
+    }
 
-        @media (max-width: 480px) {
-            .pixel-card {
-                padding: 24px;
-                border-radius: 24px;
-            }
+    .pixel-footer a:hover {
+      text-decoration: underline;
+    }
 
-            h1 {
-                font-size: 22px;
-            }
+    @media (max-width: 480px) {
+      .pixel-card {
+        padding: 24px;
+        border-radius: 24px;
+      }
 
-            .subtitle {
-                font-size: 14px;
-            }
+      h1 {
+        font-size: 22px;
+      }
 
-            .logo-image {
-                height: 40px;
-                max-width: 100px;
-            }
-        }
+      .subtitle {
+        font-size: 14px;
+      }
 
-        /* Styles for QR Code display */
-        #qrcode-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        #qrcode {
-            display: inline-block; /* Centers the QR code image */
-            margin: 0 auto;
-        }
-
-        .info {
-            margin-top: 20px;
-            font-size: 14px;
-            color: var(--lgup-gray);
-        }
-
-        .timer {
-            font-size: 16px;
-            color: var(--lgup-purple);
-            margin-top: 10px;
-        }
-    </style>
+      .logo-image {
+        height: 40px;
+        max-width: 100px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="captive-portal-container">
-        <div class="pixel-card">
-            <div class="logo-container">
-                <a href="Scanner.html" title="Admin" style="display: inline-flex; align-items: center;">
-                    <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5c/LG_U%2B_CI.svg" alt="LG U+ Logo" onerror="this.style.display='none';" />
-                </a>
-                <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/ExpressVPN-logo.svg" alt="ExpressVPN Logo" />
-            </div>
+  <div class="captive-portal-container">
+    <div class="pixel-card">
+      <div class="logo-container">
+        <a href="Scanner.html" title="Admin">
+          <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5c/LG_U%2B_CI.svg" alt="LG U+ Logo" />
+        </a>
+        <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/ExpressVPN-logo.svg" alt="ExpressVPN Logo" />
+      </div>
 
-            <h1>Welcome to <span class="lgup-text">LG U+</span> WiFi</h1>
-            <p class="subtitle">Experience the LG U+'s 5G Connection!</p>
+      <h1>Welcome to <span class="lgup-text">LG U+</span> WiFi</h1>
+      <p class="subtitle">Experience the LG U+'s 5G Connection!</p>
 
-            <div class="wifi-icon">
-                <span class="material-icons">wifi</span>
-            </div>
+      <div class="wifi-icon">
+        <span class="material-icons">wifi</span>
+      </div>
 
-            <div class="form-container">
-                <form id="phoneForm" novalidate>
-                    <div class="input-field">
-                        <label for="number">Enter your phone number</label>
-                        <input 
-                            type="tel" 
-                            id="number" 
-                            name="number" 
-                            placeholder="+63 09xx xxx xxxx" 
-                            required 
-                            autocomplete="tel"
-                        />
-                        <span class="error-message" id="phone-error"></span>
-                    </div>
-
-                    <div class="fixed-button-wrapper">
-                        <button type="button" id="generateQRBtn" class="pixel-button">
-                            <span>Generate QR</span>
-                            <span class="material-icons">qr_code</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="qrcode-container">
-                <div id="qrcode"></div>
-            </div>
-
-            <div class="info" id="infoDisplay"></div>
-            <div class="timer" id="timerDisplay"></div>
-
-            <div class="pixel-footer">
-                <p>By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
-                <p><a href="Scanner.html">Go to Payment Scanner</a></p>
-            </div>
+      <form id="phoneForm" novalidate>
+        <div class="input-field">
+          <label for="number">Enter your phone number</label>
+          <input type="tel" id="number" name="number" placeholder="+63 09xx xxx xxxx" required autocomplete="tel" />
+          <span class="error-message" id="phone-error"></span>
         </div>
+
+        <button type="button" id="generateQRBtn" class="pixel-button">
+          <span>Generate QR</span>
+          <span class="material-icons">qr_code</span>
+        </button>
+      </form>
+
+      <div id="qrcode-container">
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="info" id="infoDisplay"></div>
+      <div class="timer" id="timerDisplay"></div>
+
+      <div class="pixel-footer">
+        <p>By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+      </div>
     </div>
+  </div>
 
-    <script>
-        (function() {
-            const input = document.getElementById('number');
-            const errorMsg = document.getElementById('phone-error');
-            const form = document.getElementById('phoneForm');
-            const generateQRBtn = document.getElementById('generateQRBtn');
-            const qrcodeContainer = document.getElementById('qrcode');
-            const infoDisplay = document.getElementById('infoDisplay');
-            const timerDisplay = document.getElementById('timerDisplay');
-            let qrCodeInstance = null; // To store the QR code instance
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('number');
+      const errorMsg = document.getElementById('phone-error');
+      const qrBtn = document.getElementById('generateQRBtn');
+      const qrContainer = document.getElementById('qrcode');
+      const infoDisplay = document.getElementById('infoDisplay');
+      const timerDisplay = document.getElementById('timerDisplay');
 
-            // Prefix that should always be present and uneditable
-            const prefix = "+63 ";
+      function isValidNumber(number) {
+        const regex = /^\+?63\s?09\d{2}\s?\d{3}\s?\d{4}$/;
+        return regex.test(number.trim());
+      }
 
-            // Set initial value with prefix on page load
-            input.value = prefix;
+      function resetQR() {
+        qrContainer.innerHTML = '';
+        infoDisplay.textContent = '';
+        timerDisplay.textContent = '';
+      }
 
-            // Helper to set caret position
-            function setCaretPosition(elem, pos) {
-                if (elem.setSelectionRange) {
-                    elem.focus();
-                    elem.setSelectionRange(pos, pos);
-                }
-            }
+      qrBtn.addEventListener('click', () => {
+        const number = input.value.trim();
+        resetQR();
 
-            // Format function to insert spaces like: 09xx xxx xxxx (4-3-4 digits)
-            function formatNumber(value) {
-                const digits = value.replace(/\D/g, '');
-                let formatted = '';
-                if (digits.length > 0) {
-                    if (!digits.startsWith('09')) {
-                        return null; // invalid start
-                    }
-                    if (digits.length <= 4) {
-                        formatted = digits;
-                    } else if (digits.length <= 7) {
-                        formatted = digits.slice(0,4) + ' ' + digits.slice(4);
-                    } else if (digits.length <= 11) {
-                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7);
-                    } else {
-                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7,11);
-                    }
-                }
-                return formatted;
-            }
+        if (!isValidNumber(number)) {
+          errorMsg.textContent = 'Invalid phone number. Format: +63 09xx xxx xxxx';
+          input.classList.add('input-error');
+          return;
+        }
 
-            // Handle input event
-            input.addEventListener('input', function(e) {
-                if (!input.value.startsWith(prefix)) {
-                    input.value = prefix;
-                }
+        errorMsg.textContent = '';
+        input.classList.remove('input-error');
 
-                let afterPrefix = input.value.substring(prefix.length);
-                let digits = afterPrefix.replace(/\D/g, '');
-                if (digits.length > 11) {
-                    digits = digits.slice(0,11);
-                }
+        new QRCode(qrContainer, {
+          text: `LGU-WIFI:${number}`,
+          width: 200,
+          height: 200,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
 
-                const formattedNumber = formatNumber(digits);
-                if (formattedNumber === null) {
-                    errorMsg.textContent = 'Phone number must start with 09';
-                    input.classList.add('input-error');
-                } else {
-                    errorMsg.textContent = '';
-                    input.classList.remove('input-error');
-                }
+        infoDisplay.textContent = `QR Code generated for: ${number}`;
+        startTimer();
+      });
 
-                input.value = prefix + (formattedNumber || digits);
-                setTimeout(() => {
-                    setCaretPosition(input, input.value.length);
-                }, 0);
-            });
-
-            // Prevent user from deleting prefix
-            input.addEventListener('keydown', function(e) {
-                const cursorPos = input.selectionStart;
-                if (cursorPos <= prefix.length && 
-                    (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'Delete')) {
-                    e.preventDefault();
-                    setCaretPosition(input, prefix.length);
-                }
-            });
-
-            // QR Code Generation Logic
-            generateQRBtn.addEventListener('click', function() {
-                const val = input.value.trim();
-                const regex = /^\+63 09\d{2} \d{3} \d{4}$/;
-                
-                if (!regex.test(val)) {
-                    errorMsg.textContent = 'Phone number must be in format +63 09xx xxx xxxx';
-                    input.classList.add('input-error');
-                    input.focus();
-                    qrcodeContainer.innerHTML = ''; 
-                } else {
-                    errorMsg.textContent = '';
-                    input.classList.remove('input-error');
-                    
-                    if (qrCodeInstance) {
-                        qrcodeContainer.innerHTML = ''; // Clears the canvas/image
-                    }
-
-                    const cleanNumber = val.replace(/\s/g, ''); 
-                    
-                    // Generate QR code
-                    qrCodeInstance = new QRCode(qrcodeContainer, {
-                        text: "TEL:" + cleanNumber,
-                        width: 128,
-                        height: 128,
-                        colorDark : "#000000",
-                        colorLight : "#ffffff",
-                        correctLevel : QRCode.CorrectLevel.H
-                    });
-
-                    // Display IP, MAC, and Device Name
-                    const ipAddress = "192.168.1.1"; // Simulated IP address
-                    const macAddress = "00:1A:2B:3C:4D:5E"; // Simulated MAC address
-                    const deviceName = "User 's Device"; // Simulated Device Name
-                    infoDisplay.innerHTML = `IP Address: ${ipAddress}<br>MAC Address: ${macAddress}<br>Device Name: ${deviceName}`;
-
-                    // Start countdown timer
-                    startCountdown(5 * 60); // 5 minutes in seconds
-                }
-            });
-
-            // Countdown Timer Function
-            function startCountdown(duration) {
-                let timer = duration, minutes, seconds;
-                const interval = setInterval(function () {
-                    minutes = parseInt(timer / 60, 10);
-                    seconds = parseInt(timer % 60, 10);
-
-                    minutes = minutes < 10 ? "0" + minutes : minutes;
-                    seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                    timerDisplay.textContent = `Time until connection expires: ${minutes}:${seconds}`;
-
-                    if (--timer < 0) {
-                        clearInterval(interval);
-                        timerDisplay.textContent = "Connection expired.";
-                    }
-                }, 1000);
-            }
-        })();
-    </script>
+      function startTimer() {
+        let seconds = 60;
+        timerDisplay.textContent = `Expires in ${seconds}s`;
+        const interval = setInterval(() => {
+          seconds--;
+          timerDisplay.textContent = `Expires in ${seconds}s`;
+          if (seconds <= 0) {
+            clearInterval(interval);
+            resetQR();
+            timerDisplay.textContent = 'QR code expired. Please generate a new one.';
+          }
+        }, 1000);
+      }
+    });
+  </script>
 </body>
 </html>
