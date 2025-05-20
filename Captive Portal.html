@@ -6,6 +6,7 @@
     <title>LG U+ WiFi - Connect</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
     <style>
         /* LG U+ Themed Captive Portal - Styles */
         :root {
@@ -231,35 +232,29 @@
                 max-width: 100px;
             }
         }
-        @media (max-width: 480px) {
-    body {
-        flex-direction: column;
-        justify-content: flex-start;
-    }
 
-    .captive-portal-container {
-        padding-bottom: 100px; /* space for the fixed button */
-    }
+        /* Styles for QR Code display */
+        #qrcode-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #qrcode {
+            display: inline-block; /* Centers the QR code image */
+            margin: 0 auto;
+        }
 
-    .fixed-button-wrapper {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background: var(--lgup-white);
-        padding: 12px 16px;
-        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
-    }
+        .info {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--lgup-gray);
+        }
 
-    .pixel-button {
-        width: 100%;
-        border-radius: 28px;
-    }
-}
-
+        .timer {
+            font-size: 16px;
+            color: var(--lgup-purple);
+            margin-top: 10px;
+        }
     </style>
-    
 </head>
 <body>
     <div class="captive-portal-container">
@@ -279,7 +274,7 @@
             </div>
 
             <div class="form-container">
-<form id="phoneForm" novalidate>
+                <form id="phoneForm" novalidate>
                     <div class="input-field">
                         <label for="number">Enter your phone number</label>
                         <input 
@@ -293,12 +288,21 @@
                         <span class="error-message" id="phone-error"></span>
                     </div>
 
-<div class="fixed-button-wrapper">
-    <button type="button" id="generateQRBtn" class="pixel-button">
-        <span>Generate QR</span>
-        <span class="material-icons">qr_code</span>
-    </button>
+                    <div class="fixed-button-wrapper">
+                        <button type="button" id="generateQRBtn" class="pixel-button">
+                            <span>Generate QR</span>
+                            <span class="material-icons">qr_code</span>
+                        </button>
+                    </div>
+                </form>
             </div>
+
+            <div id="qrcode-container">
+                <div id="qrcode"></div>
+            </div>
+
+            <div class="info" id="infoDisplay"></div>
+            <div class="timer" id="timerDisplay"></div>
 
             <div class="pixel-footer">
                 <p>By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
@@ -311,6 +315,11 @@
             const input = document.getElementById('number');
             const errorMsg = document.getElementById('phone-error');
             const form = document.getElementById('phoneForm');
+            const generateQRBtn = document.getElementById('generateQRBtn');
+            const qrcodeContainer = document.getElementById('qrcode');
+            const infoDisplay = document.getElementById('infoDisplay');
+            const timerDisplay = document.getElementById('timerDisplay');
+            let qrCodeInstance = null; // To store the QR code instance
 
             // Prefix that should always be present and uneditable
             const prefix = "+63 ";
@@ -328,19 +337,12 @@
 
             // Format function to insert spaces like: 09xx xxx xxxx (4-3-4 digits)
             function formatNumber(value) {
-                // Remove all non-digits
                 const digits = value.replace(/\D/g, '');
-                // Remove prefix digits (we expect prefix "+63 " so digits "63" is prefix digits)
-                // but since we don't store prefix digits in input.value (we keep prefix text), 
-                // we just treat all digits as local number after prefix.
-                // Actually, user types only after prefix ("+63 "), so digits here is local number digits starting with "09..."
                 let formatted = '';
                 if (digits.length > 0) {
-                    // Ensure starts with 09 at least
                     if (!digits.startsWith('09')) {
                         return null; // invalid start
                     }
-                    // Format: 09xx xxx xxxx
                     if (digits.length <= 4) {
                         formatted = digits;
                     } else if (digits.length <= 7) {
@@ -356,23 +358,16 @@
 
             // Handle input event
             input.addEventListener('input', function(e) {
-                // If cursor tries to move into prefix, reset it to prefix end
                 if (!input.value.startsWith(prefix)) {
                     input.value = prefix;
                 }
 
-                // Extract the part after prefix
                 let afterPrefix = input.value.substring(prefix.length);
-
-                // Remove all non-digit chars from afterPrefix
                 let digits = afterPrefix.replace(/\D/g, '');
-
-                // Limit digits max to 11 (09xx xxx xxxx = 11 digits including the leading 0)
                 if (digits.length > 11) {
                     digits = digits.slice(0,11);
                 }
 
-                // Format number or reset error
                 const formattedNumber = formatNumber(digits);
                 if (formattedNumber === null) {
                     errorMsg.textContent = 'Phone number must start with 09';
@@ -382,10 +377,7 @@
                     input.classList.remove('input-error');
                 }
 
-                // Set input value = prefix + formatted number
                 input.value = prefix + (formattedNumber || digits);
-
-                // Set caret position to end
                 setTimeout(() => {
                     setCaretPosition(input, input.value.length);
                 }, 0);
@@ -401,24 +393,66 @@
                 }
             });
 
-            // Validation on submit
-            form.addEventListener('submit', function(e) {
+            // QR Code Generation Logic
+            generateQRBtn.addEventListener('click', function() {
                 const val = input.value.trim();
-                // Must match full pattern +63 09xx xxx xxxx where x is digit
                 const regex = /^\+63 09\d{2} \d{3} \d{4}$/;
+                
                 if (!regex.test(val)) {
-                    e.preventDefault();
                     errorMsg.textContent = 'Phone number must be in format +63 09xx xxx xxxx';
                     input.classList.add('input-error');
                     input.focus();
+                    qrcodeContainer.innerHTML = ''; 
                 } else {
                     errorMsg.textContent = '';
                     input.classList.remove('input-error');
+                    
+                    if (qrCodeInstance) {
+                        qrcodeContainer.innerHTML = ''; // Clears the canvas/image
+                    }
+
+                    const cleanNumber = val.replace(/\s/g, ''); 
+                    
+                    // Generate QR code
+                    qrCodeInstance = new QRCode(qrcodeContainer, {
+                        text: "TEL:" + cleanNumber,
+                        width: 128,
+                        height: 128,
+                        colorDark : "#000000",
+                        colorLight : "#ffffff",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    // Display IP, MAC, and Device Name
+                    const ipAddress = "192.168.1.1"; // Simulated IP address
+                    const macAddress = "00:1A:2B:3C:4D:5E"; // Simulated MAC address
+                    const deviceName = "User 's Device"; // Simulated Device Name
+                    infoDisplay.innerHTML = `IP Address: ${ipAddress}<br>MAC Address: ${macAddress}<br>Device Name: ${deviceName}`;
+
+                    // Start countdown timer
+                    startCountdown(5 * 60); // 5 minutes in seconds
                 }
             });
+
+            // Countdown Timer Function
+            function startCountdown(duration) {
+                let timer = duration, minutes, seconds;
+                const interval = setInterval(function () {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    timerDisplay.textContent = `Time until connection expires: ${minutes}:${seconds}`;
+
+                    if (--timer < 0) {
+                        clearInterval(interval);
+                        timerDisplay.textContent = "Connection expired.";
+                    }
+                }, 1000);
+            }
         })();
     </script>
 </body>
-<!-- Admin Button -->
-
 </html>
