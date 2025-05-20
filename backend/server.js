@@ -1,84 +1,63 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const path = require('path');
-const { exec } = require('child_process');
+const cron = require('node-cron');
+
 const app = express();
-const port = process.env.PORT || 3000;
-
-// MongoDB connection
-const mongoURI = 'mongodb+srv://lgup-expressvpn:Anntwan14@cluster0.3th5y6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Updated to MongoDB Atlas connection string
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// Verification schema and model
-const verificationSchema = new mongoose.Schema({
-  phoneNumber: { type: String, required: true, unique: true },
-  token: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now, expires: 300 } // expires after 5 minutes
-});
-
-const Verification = mongoose.model('Verification', verificationSchema);
-
-// Middleware
 app.use(bodyParser.json());
 
-// Serve static files for frontend
-app.use(express.static(path.join(__dirname, '../')));
+// Connect to MongoDB
+mongoose.connect('mongodb+srv://lgup-expressvpn:Anntwan14@cluster0.3th5y6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Serve Captive Portal.html at root URL
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Captive Portal.html'));
+// Define a schema
+const DeviceSchema = new mongoose.Schema({
+  macAddress: String,
+  phoneNumber: String,
+  remainingTime: Number,
+  createdAt: { type: Date, default: Date.now, expires: '24h' } // Automatically remove after 24 hours
 });
 
-// Phone number validation function
-function isValidPhoneNumber(phoneNumber) {
-  // Accept +63 or 09 followed by 9 digits
-  const regex = /^(\+63|09)\d{9}$/;
-  return regex.test(phoneNumber);
-}
+const Device = mongoose.model('Device', DeviceSchema);
 
-// Generate 6-digit numeric token
-function generateToken() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
+// Payment endpoint
+app.post('/pay', (req, res) => {
+  const { macAddress, time, phoneNumber } = req.body;
 
-// /verify POST endpoint
-app.post('/verify', async (req, res) => {
-  const { phoneNumber } = req.body;
+  Device.findOneAndUpdate(
+    { macAddress },
+    { $set: { phoneNumber, remainingTime: time }, $currentDate: { createdAt: true } },
+    { new: true, upsert: true }
+  )
+  .then(() => {
+    res.json({ success: true, time });
+  })
+  .catch(err => res.json({ success: false, error: err.message }));
+});
 
-  if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
-    return res.status(400).json({ status: 'error', message: 'Invalid phone number.' });
-  }
+// Remaining time endpoint
+app.get('/remaining-time', (req, res) => {
+  const { macAddress } = req.query;
 
-  const token = generateToken();
-
-  try {
-    // Upsert verification record
-    await Verification.findOneAndUpdate(
-      { phoneNumber },
-      { token, createdAt: new Date() },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-
-    // Send SMS via Termux API
-    const smsCommand = `termux-sms-send -n ${phoneNumber} "Your verification code is: ${token}"`;
-    exec(smsCommand, (error, stdout, stderr) => {
-      if (error) {
-        console.error('Error sending SMS:', error);
-        return res.status(500).json({ status: 'error', message: 'Failed to send SMS.' });
+  Device.findOne({ macAddress })
+    .then(device => {
+      if (device) {
+        res.json({ success: true, remainingTime: device.remainingTime });
+      } else {
+        res.json({ success: false, message: 'Device not found' });
       }
-      console.log('SMS sent:', stdout);
-      return res.json({ status: 'pending', message: 'Verification code sent.' });
-    });
-  } catch (err) {
-    console.error('Database error:', err);
-    return res.status(500).json({ status: 'error', message: 'Internal server error.' });
-  }
+    })
+    .catch(err => res.json({ success: false, error: err.message }));
+});
+
+// Cron job to clear all entries daily
+cron.schedule('0 0 * * *', () => {
+  Device.deleteMany({})
+    .then(() => console.log('All entries cleared from MongoDB'))
+    .catch(err => console.error('Error clearing entries:', err));
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
