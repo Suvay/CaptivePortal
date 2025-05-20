@@ -1,228 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LG U+ WiFi - Connect</title>
-  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js" defer></script>
+  <meta charset="UTF-8">
+  <title>LG U+ Captive Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Fonts and Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
   <style>
+    /* LG U+ Themed Captive Portal - Styles */
     :root {
-      --lgup-purple: #8A2BE2;
-      --expressvpn-red: #FF0000;
-      --lgup-black: #202124;
-      --lgup-gray: #5F6368;
-      --lgup-light-gray: #E8EAED;
-      --lgup-white: #FFFFFF;
-      --lgup-purple-light: #D8BFF9;
-      --font-family: 'Google Sans', Arial, sans-serif;
-      --border-radius: 28px;
-      --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        --lgup-purple: #8A2BE2;
+        --expressvpn-red: #FF0000;
+        --lgup-black: #202124;
+        --lgup-gray: #5F6368;
+        --lgup-light-gray: #E8EAED;
+        --lgup-white: #FFFFFF;
+        --lgup-purple-light: #D8BFF9;
+        --font-family: 'Google Sans', Arial, sans-serif;
+        --border-radius: 28px;
+        --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
     body {
-      font-family: var(--font-family);
-      background: linear-gradient(135deg, var(--lgup-purple-light), var(--lgup-white));
-      color: var(--lgup-black);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+        font-family: var(--font-family);
+        background: linear-gradient(135deg, var(--lgup-purple-light) 0%, var(--lgup-white) 100%);
+        color: var(--lgup-black);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
     }
 
     .captive-portal-container {
-      width: 100%;
-      max-width: 420px;
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
     }
 
     .pixel-card {
-      background: var(--lgup-white);
-      border-radius: var(--border-radius);
-      padding: 32px;
-      box-shadow: var(--shadow);
-      text-align: center;
-      overflow: hidden;
+        background-color: var(--lgup-white);
+        border-radius: var(--border-radius);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
     }
 
     .logo-container {
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      margin-bottom: 20px;
-      align-items: center;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        align-items: center;
     }
 
     .logo-image {
-      height: 48px;
-      object-fit: contain;
-      max-width: 120px;
+        height: 48px;
+        width: auto;
+        max-width: 120px;
+        object-fit: contain;
     }
 
     h1 {
-      font-size: 24px;
-      font-weight: 500;
-      margin-bottom: 8px;
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--lgup-black);
     }
 
     .lgup-text {
-      background: linear-gradient(90deg, var(--lgup-purple), var(--expressvpn-red));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 700;
+        background: linear-gradient(90deg, 
+            var(--lgup-purple) 0%, 
+            var(--expressvpn-red) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 700;
     }
 
     .subtitle {
-      font-size: 16px;
-      color: var(--lgup-gray);
-      margin-bottom: 24px;
+        font-size: 16px;
+        color: var(--lgup-gray);
+        margin-bottom: 24px;
     }
 
-    .wifi-icon {
-      margin-bottom: 20px;
-    }
-
-    .wifi-icon .material-icons {
-      font-size: 48px;
-      color: var(--lgup-purple);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.6; transform: scale(0.95); }
-      50% { opacity: 1; transform: scale(1.05); }
-      100% { opacity: 0.6; transform: scale(0.95); }
-    }
-
-    .input-field {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: var(--lgup-gray);
-    }
-
-    input[type="tel"] {
-      width: 100%;
-      padding: 16px;
-      font-size: 16px;
-      border: 2px solid var(--lgup-light-gray);
-      border-radius: 12px;
-      font-family: var(--font-family);
-      color: var(--lgup-black);
-      background: var(--lgup-white);
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-
-    input[type="tel"]:focus {
-      border-color: var(--lgup-purple);
-      box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
-      outline: none;
-    }
-
-    .input-error {
-      border-color: var(--expressvpn-red) !important;
-      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
-    }
-
-    .error-message {
-      font-size: 12px;
-      color: var(--expressvpn-red);
-      margin-top: 4px;
-      min-height: 16px;
-    }
-
-    .pixel-button {
-      background: var(--lgup-purple);
-      color: var(--lgup-white);
-      border: none;
-      border-radius: 24px;
-      padding: 14px 24px;
-      font-size: 16px;
-      font-weight: 500;
-      font-family: var(--font-family);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: auto;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      transition: background 0.3s, transform 0.1s;
-    }
-
-    .pixel-button:hover {
-      background: #6A1B9A;
-      transform: translateY(-1px);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .pixel-button:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    .info, .timer {
-      margin-top: 16px;
-      font-size: 14px;
-      color: var(--lgup-gray);
-    }
-
-    .timer {
-      font-size: 16px;
-      color: var(--lgup-purple);
-    }
-
-    #qrcode-container {
-      margin-top: 20px;
-      text-align: center;
+    .remaining-time {
+        font-size: 20px;
+        color: var(--lgup-purple);
+        margin: 20px 0;
     }
 
     .pixel-footer {
-      margin-top: 32px;
-      font-size: 12px;
-      color: var(--lgup-gray);
+        margin-top: 32px;
+        font-size: 12px;
+        color: var(--lgup-gray);
     }
 
     .pixel-footer a {
-      color: var(--lgup-purple);
-      text-decoration: none;
+        color: var(--lgup-purple);
+        text-decoration: none;
     }
 
     .pixel-footer a:hover {
-      text-decoration: underline;
+        text-decoration: underline;
+    }
+
+    .top-up-button {
+        background-color: var(--lgup-purple);
+        color: var(--lgup-white);
+        border: none;
+        border-radius: 24px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
     }
 
     @media (max-width: 480px) {
-      .pixel-card {
-        padding: 24px;
-        border-radius: 24px;
-      }
+        .pixel-card {
+            padding: 24px;
+            border-radius: 24px;
+        }
 
-      h1 {
-        font-size: 22px;
-      }
+        h1 {
+            font-size: 22px;
+        }
 
-      .subtitle {
-        font-size: 14px;
-      }
+        .subtitle {
+            font-size: 14px;
+        }
 
-      .logo-image {
-        height: 40px;
-        max-width: 100px;
-      }
+        .logo-image {
+            height: 40px;
+            max-width: 100px;
+        }
     }
   </style>
 </head>
@@ -230,104 +154,62 @@
   <div class="captive-portal-container">
     <div class="pixel-card">
       <div class="logo-container">
-        <a href="Scanner.html" title="Admin">
-          <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5c/LG_U%2B_CI.svg" alt="LG U+ Logo" />
-        </a>
-        <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/ExpressVPN-logo.svg" alt="ExpressVPN Logo" />
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/LG_U%2B_logo.svg/2560px-LG_U%2B_logo.svg.png" alt="LG U+" class="logo-image">
+        <img src="https://seeklogo.com/images/E/expressvpn-logo-AEF922E372-seeklogo.com.png" alt="ExpressVPN" class="logo-image">
       </div>
 
-      <h1>Welcome to <span class="lgup-text">LG U+</span> WiFi</h1>
-      <p class="subtitle">Experience the LG U+'s 5G Connection!</p>
+      <h1><span class="lgup-text">LG U+ QR Login</span></h1>
+      <p class="subtitle">Your MAC Address QR Code:</p>
+      <div id="qr-code" style="width: 100%;"></div>
+      <div class="remaining-time" id="remaining-time">Loading...</div>
 
-      <div class="wifi-icon">
-        <span class="material-icons">wifi</span>
-      </div>
-
-      <form id="phoneForm" novalidate>
-        <div class="input-field">
-          <label for="number">Enter your phone number</label>
-          <input type="tel" id="number" name="number" placeholder="+63 09xx xxx xxxx" required autocomplete="tel" />
-          <span class="error-message" id="phone-error"></span>
-        </div>
-
-        <button type="button" id="generateQRBtn" class="pixel-button">
-          <span>Generate QR</span>
-          <span class="material-icons">qr_code</span>
-        </button>
-      </form>
-
-      <div id="qrcode-container">
-        <div id="qrcode"></div>
-      </div>
-
-      <div class="info" id="infoDisplay"></div>
-      <div class="timer" id="timerDisplay"></div>
+      <button class="top-up-button" id="top-up-button">Top Up</button>
 
       <div class="pixel-footer">
-        <p>By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+        © 2025 LG U+ | <a href="#">Help</a>
       </div>
     </div>
   </div>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const input = document.getElementById('number');
-      const errorMsg = document.getElementById('phone-error');
-      const qrBtn = document.getElementById('generateQRBtn');
-      const qrContainer = document.getElementById('qrcode');
-      const infoDisplay = document.getElementById('infoDisplay');
-      const timerDisplay = document.getElementById('timerDisplay');
+    // Automatically detect and parse the client's MAC address
+    const macAddress = "00:00:00:00:00:00"; // Replace with actual MAC address detection logic
 
-      function isValidNumber(number) {
-        const regex = /^\+?63\s?09\d{2}\s?\d{3}\s?\d{4}$/;
-        return regex.test(number.trim());
-      }
-
-      function resetQR() {
-        qrContainer.innerHTML = '';
-        infoDisplay.textContent = '';
-        timerDisplay.textContent = '';
-      }
-
-      qrBtn.addEventListener('click', () => {
-        const number = input.value.trim();
-        resetQR();
-
-        if (!isValidNumber(number)) {
-          errorMsg.textContent = 'Invalid phone number. Format: +63 09xx xxx xxxx';
-          input.classList.add('input-error');
-          return;
-        }
-
-        errorMsg.textContent = '';
-        input.classList.remove('input-error');
-
-        new QRCode(qrContainer, {
-          text: `LGU-WIFI:${number}`,
-          width: 200,
-          height: 200,
-          colorDark: "#000000",
-          colorLight: "#ffffff",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-
-        infoDisplay.textContent = `QR Code generated for: ${number}`;
-        startTimer();
+    // Generate QR code for the MAC address
+    $(document).ready(function() {
+      $( "#qr-code" ).qrcode({
+        width: 128,
+        height: 128,
+        text: macAddress
       });
 
-      function startTimer() {
-        let seconds = 60;
-        timerDisplay.textContent = `Expires in ${seconds}s`;
-        const interval = setInterval(() => {
-          seconds--;
-          timerDisplay.textContent = `Expires in ${seconds}s`;
-          if (seconds <= 0) {
-            clearInterval(interval);
-            resetQR();
-            timerDisplay.textContent = 'QR code expired. Please generate a new one.';
+      // Fetch remaining time from the server
+      function fetchRemainingTime() {
+        $.get(`/remaining-time?macAddress=${macAddress}`, function(data) {
+          if (data.success) {
+            $('#remaining-time').text(`${data.remainingTime} minutes remaining`);
+            if (data.remainingTime <= 0) {
+              // Redirect to restricted page
+              window.location.href = "/restricted"; // Redirect URL
+            }
+          } else {
+            $('#remaining-time').text("Error fetching time.");
           }
-        }, 1000);
+        });
       }
+
+      fetchRemainingTime();
+      setInterval(fetchRemainingTime, 60000); // Check every minute
+
+      // Top Up button functionality
+      $('#top-up-button').click(function() {
+        $( "#qr-code" ).empty(); // Clear existing QR code
+        $( "#qr-code" ).qrcode({
+          width: 128,
+          height: 128,
+          text: macAddress
+        });
+      });
     });
   </script>
 </body>
