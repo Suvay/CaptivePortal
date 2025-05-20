@@ -1,1 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LG U+ Captive Portal QR Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- Google Fonts and Material Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- HTML5 QR Code Scanner -->
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+
+  <style>
+    /* LG U+ Themed Captive Portal - Styles */
+    :root {
+        --lgup-purple: #8A2BE2;
+        --expressvpn-red: #FF0000;
+        --lgup-black: #202124;
+        --lgup-gray: #5F6368;
+        --lgup-light-gray: #E8EAED;
+        --lgup-white: #FFFFFF;
+        --lgup-purple-light: #D8BFF9;
+        --font-family: 'Google Sans', Arial, sans-serif;
+        --border-radius: 28px;
+        --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: var(--font-family);
+        background: linear-gradient(135deg, var(--lgup-purple-light) 0%, var(--lgup-white) 100%);
+        color: var(--lgup-black);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .captive-portal-container {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+
+    .pixel-card {
+        background-color: var(--lgup-white);
+        border-radius: var(--border-radius);
+        padding: 32px;
+        box-shadow: var(--shadow);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .logo-container {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        align-items: center;
+    }
+
+    .logo-image {
+        height: 48px;
+        width: auto;
+        max-width: 120px;
+        object-fit: contain;
+    }
+
+    h1 {
+        font-size: 24px;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: var(--lgup-black);
+    }
+
+    .lgup-text {
+        background: linear-gradient(90deg, 
+            var(--lgup-purple) 0%, 
+            var(--expressvpn-red) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 700;
+    }
+
+    .subtitle {
+        font-size: 16px;
+        color: var(--lgup-gray);
+        margin-bottom: 24px;
+    }
+
+    .form-container {
+        margin-bottom: 24px;
+    }
+
+    .input-field {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    input[type="tel"], input[type="number"] {
+        width: 100%;
+        padding: 16px;
+        font-size: 16px;
+        border: 2px solid var(--lgup-light-gray);
+        border-radius: 12px;
+        background-color: var(--lgup-white);
+        color: var(--lgup-black);
+        font-family: var(--font-family);
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="tel"]:focus, input[type="number"]:focus {
+        outline: none;
+        border-color: var(--lgup-purple);
+        box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+    }
+
+    .pixel-button {
+        background-color: var(--lgup-purple);
+        color: var(--lgup-white);
+        border: none;
+        border-radius: 24px;
+        padding: 14px 24px;
+        font-size: 16px;
+        font-family: var(--font-family);
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        transition: background-color 0.3s, transform 0.1s;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .pixel-footer {
+        margin-top: 32px;
+        font-size: 12px;
+        color: var(--lgup-gray);
+    }
+
+    .pixel-footer a {
+        color: var(--lgup-purple);
+        text-decoration: none;
+    }
+
+    .pixel-footer a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+        .pixel-card {
+            padding: 24px;
+            border-radius: 24px;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+        }
+
+        .logo-image {
+            height: 40px;
+            max-width: 100px;
+        }
+    }
+  </style>
+</head>
+<body>
+  <div class="captive-portal-container">
+    <div class="pixel-card">
+      <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/LG_U%2B_logo.svg/2560px-LG_U%2B_logo.svg.png" alt="LG U+" class="logo-image">
+        <img src="https://seeklogo.com/images/E/expressvpn-logo-AEF922E372-seeklogo.com.png" alt="ExpressVPN" class="logo-image">
+      </div>
+
+      <h1><span class="lgup-text">LG U+ QR Login</span></h1>
+      <p class="subtitle">Scan the QR code to connect</p>
+
+      <div class="form-container">
+        <div id="qr-reader" style="width: 100%;"></div>
+        <div id="qr-reader-results" class="error-message"></div>
+        <div class="input-field">
+          <label for="payment-amount">Payment Amount (in Pesos):</label>
+          <input type="number" id="payment-amount" placeholder="Enter amount" min="1" required>
+        </div>
+      </div>
+
+      <button class="pixel-button" id="submit-payment">
+        Submit Payment <span class="material-icons">payment</span>
+      </button>
+
+      <div class="pixel-footer">
+        © 2025 LG U+ | <a href="#">Help</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const resultContainer = document.getElementById('qr-reader-results');
+    const paymentAmountInput = document.getElementById('payment-amount');
+    const submitPaymentButton = document.getElementById('submit-payment');
+
+    function onScanSuccess(decodedText, decodedResult) {
+      resultContainer.innerHTML = `✅ Scanned: ${decodedText}`;
+      const macAddress = decodedText;
+
+      submitPaymentButton.onclick = function() {
+        const paymentAmount = parseInt(paymentAmountInput.value);
+        const timeAllocated = Math.floor((paymentAmount / 5) * 40); // 5 pesos = 40 minutes
+
+        fetch('/pay', { // Use local server URL
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ macAddress, time: timeAllocated, phoneNumber: '1234567890' }) // Example phone number
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(`Payment successful! Time added: ${data.time} minutes.`);
+          } else {
+            alert('Payment failed.');
+          }
+        });
+      };
+    }
+
+    function onScanFailure(error) {
+      // Optional: console.log(`Scan error: ${error}`);
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
+      fps: 10,
+      qrbox: 250
+    });
+
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  </script>
+</body>
+</html>
