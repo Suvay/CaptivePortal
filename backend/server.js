@@ -2,8 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
-const dotenv = require('dotenv');
-dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
@@ -68,4 +66,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
