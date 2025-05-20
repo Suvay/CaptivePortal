@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // MongoDB connection
-const mongoURI = 'mongodb://lgup-expressvpn:Anntwan14@localhost:27017/captiveportal'; // Updated with auth credentials
+const mongoURI = 'mongodb+srv://lgup-expressvpn:Anntwan14@cluster0.3th5y6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; // Updated to MongoDB Atlas connection string
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
