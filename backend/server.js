@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://lgup-expressvpn:Anntwan14@cluster0.3th5y6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect'mongodb+srv://lgup-expressvpn:<db_password>@cluster0.3th5y6j.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Define a schema
 const DeviceSchema = new mongoose.Schema({
