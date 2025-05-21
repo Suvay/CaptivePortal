@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LG U+ WiFi - Connect</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <style>
+        /* LG U+ Themed Captive Portal - Styles */
+        :root {
+            --lgup-purple: #8A2BE2;
+            --expressvpn-red: #FF0000;
+            --lgup-black: #202124;
+            --lgup-gray: #5F6368;
+            --lgup-light-gray: #E8EAED;
+            --lgup-white: #FFFFFF;
+            --lgup-purple-light: #D8BFF9;
+            --font-family: 'Google Sans', Arial, sans-serif;
+            --border-radius: 28px;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--lgup-purple-light) 0%, var(--lgup-white) 100%);
+            color: var(--lgup-black);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .captive-portal-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .pixel-card {
+            background-color: var(--lgup-white);
+            border-radius: var(--border-radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .logo-image {
+            height: 48px;
+            width: auto;
+            max-width: 120px;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--lgup-black);
+        }
+
+        .lgup-text {
+            background: linear-gradient(90deg, 
+                var(--lgup-purple) 0%, 
+                var(--expressvpn-red) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--lgup-gray);
+            margin-bottom: 24px;
+        }
+
+        .wifi-icon {
+            margin-bottom: 20px;
+        }
+
+        .wifi-icon .material-icons {
+            font-size: 48px;
+            color: var(--lgup-purple);
+            animation: pulse 2s infinite;
+        }
+
+        .form-container {
+            margin-bottom: 24px;
+        }
+
+        .input-field {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--lgup-gray);
+        }
+
+        input[type="tel"] {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            border: 2px solid var(--lgup-light-gray);
+            border-radius: 12px;
+            background-color: var(--lgup-white);
+            color: var(--lgup-black);
+            font-family: var(--font-family);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: var(--lgup-purple);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+
+        .input-error {
+            border-color: var(--expressvpn-red) !important;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2) !important;
+        }
+
+        .error-message {
+            display: block;
+            color: var(--expressvpn-red);
+            font-size: 12px;
+            margin-top: 4px;
+            min-height: 16px;
+        }
+
+        .pixel-button {
+            background-color: var(--lgup-purple);
+            color: var(--lgup-white);
+            border: none;
+            border-radius: 24px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-family: var(--font-family);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            transition: background-color 0.3s, transform 0.1s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pixel-button .material-icons {
+            margin-left: 8px;
+        }
+
+        .pixel-button:hover {
+            background-color: #6A1B9A;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pixel-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .pixel-footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: var(--lgup-gray);
+        }
+
+        .pixel-footer a {
+            color: var(--lgup-purple);
+            text-decoration: none;
+        }
+
+        .pixel-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0.6;
+                transform: scale(0.95);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .pixel-card {
+                padding: 24px;
+                border-radius: 24px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .logo-image {
+                height: 40px;
+                max-width: 100px;
+            }
+        }
+        @media (max-width: 480px) {
+    body {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .captive-portal-container {
+        padding-bottom: 100px; /* space for the fixed button */
+    }
+
+    .fixed-button-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--lgup-white);
+        padding: 12px 16px;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .pixel-button {
+        width: 100%;
+        border-radius: 28px;
+    }
+}
+
+    </style>
+    
+</head>
+<body>
+    <div class="captive-portal-container">
+        <div class="pixel-card">
+            <div class="logo-container">
+                <a href="Scanner.html" title="Admin" style="display: inline-flex; align-items: center;">
+                    <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5c/LG_U%2B_CI.svg" alt="LG U+ Logo" onerror="this.style.display='none';" />
+                </a>
+                <img class="logo-image" src="https://upload.wikimedia.org/wikipedia/commons/e/e0/ExpressVPN-logo.svg" alt="ExpressVPN Logo" />
+            </div>
+
+            <h1>Welcome to <span class="lgup-text">LG U+</span> WiFi</h1>
+            <p class="subtitle">Experience the LG U+'s 5G Connection!</p>
+
+            <div class="wifi-icon">
+                <span class="material-icons">wifi</span>
+            </div>
+
+            <div class="form-container">
+<form id="phoneForm" novalidate>
+                    <div class="input-field">
+                        <label for="number">Enter your phone number</label>
+                        <input 
+                            type="tel" 
+                            id="number" 
+                            name="number" 
+                            placeholder="+63 09xx xxx xxxx" 
+                            required 
+                            autocomplete="tel"
+                        />
+                        <span class="error-message" id="phone-error"></span>
+                    </div>
+
+<div class="fixed-button-wrapper">
+    <button type="button" id="generateQRBtn" class="pixel-button">
+        <span>Generate QR</span>
+        <span class="material-icons">qr_code</span>
+    </button>
+            </div>
+
+            <div class="pixel-footer">
+                <p>By connecting, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const input = document.getElementById('number');
+            const errorMsg = document.getElementById('phone-error');
+            const form = document.getElementById('phoneForm');
+
+            // Prefix that should always be present and uneditable
+            const prefix = "+63 ";
+
+            // Set initial value with prefix on page load
+            input.value = prefix;
+
+            // Helper to set caret position
+            function setCaretPosition(elem, pos) {
+                if (elem.setSelectionRange) {
+                    elem.focus();
+                    elem.setSelectionRange(pos, pos);
+                }
+            }
+
+            // Format function to insert spaces like: 09xx xxx xxxx (4-3-4 digits)
+            function formatNumber(value) {
+                // Remove all non-digits
+                const digits = value.replace(/\D/g, '');
+                // Remove prefix digits (we expect prefix "+63 " so digits "63" is prefix digits)
+                // but since we don't store prefix digits in input.value (we keep prefix text), 
+                // we just treat all digits as local number after prefix.
+                // Actually, user types only after prefix ("+63 "), so digits here is local number digits starting with "09..."
+                let formatted = '';
+                if (digits.length > 0) {
+                    // Ensure starts with 09 at least
+                    if (!digits.startsWith('09')) {
+                        return null; // invalid start
+                    }
+                    // Format: 09xx xxx xxxx
+                    if (digits.length <= 4) {
+                        formatted = digits;
+                    } else if (digits.length <= 7) {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4);
+                    } else if (digits.length <= 11) {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7);
+                    } else {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7,11);
+                    }
+                }
+                return formatted;
+            }
+
+            // Handle input event
+            input.addEventListener('input', function(e) {
+                // If cursor tries to move into prefix, reset it to prefix end
+                if (!input.value.startsWith(prefix)) {
+                    input.value = prefix;
+                }
+
+                // Extract the part after prefix
+                let afterPrefix = input.value.substring(prefix.length);
+
+                // Remove all non-digit chars from afterPrefix
+                let digits = afterPrefix.replace(/\D/g, '');
+
+                // Limit digits max to 11 (09xx xxx xxxx = 11 digits including the leading 0)
+                if (digits.length > 11) {
+                    digits = digits.slice(0,11);
+                }
+
+                // Format number or reset error
+                const formattedNumber = formatNumber(digits);
+                if (formattedNumber === null) {
+                    errorMsg.textContent = 'Phone number must start with 09';
+                    input.classList.add('input-error');
+                } else {
+                    errorMsg.textContent = '';
+                    input.classList.remove('input-error');
+                }
+
+                // Set input value = prefix + formatted number
+                input.value = prefix + (formattedNumber || digits);
+
+                // Set caret position to end
+                setTimeout(() => {
+                    setCaretPosition(input, input.value.length);
+                }, 0);
+            });
+
+            // Prevent user from deleting prefix
+            input.addEventListener('keydown', function(e) {
+                const cursorPos = input.selectionStart;
+                if (cursorPos <= prefix.length && 
+                    (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'Delete')) {
+                    e.preventDefault();
+                    setCaretPosition(input, prefix.length);
+                }
+            });
+
+            // Validation on submit
+            form.addEventListener('submit', function(e) {
+                const val = input.value.trim();
+                // Must match full pattern +63 09xx xxx xxxx where x is digit
+                const regex = /^\+63 09\d{2} \d{3} \d{4}$/;
+                if (!regex.test(val)) {
+                    e.preventDefault();
+                    errorMsg.textContent = 'Phone number must be in format +63 09xx xxx xxxx';
+                    input.classList.add('input-error');
+                    input.focus();
+                } else {
+                    errorMsg.textContent = '';
+                    input.classList.remove('input-error');
+                }
+            });
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        (function() {
+            const input = document.getElementById('number');
+            const errorMsg = document.getElementById('phone-error');
+            const form = document.getElementById('phoneForm');
+            const generateQRBtn = document.getElementById('generateQRBtn');
+
+            // Prefix that should always be present and uneditable
+            const prefix = "+63 ";
+
+            // Set initial value with prefix on page load
+            input.value = prefix;
+
+            // Helper to set caret position
+            function setCaretPosition(elem, pos) {
+                if (elem.setSelectionRange) {
+                    elem.focus();
+                    elem.setSelectionRange(pos, pos);
+                }
+            }
+
+            // Format function to insert spaces like: 09xx xxx xxxx (4-3-4 digits)
+            function formatNumber(value) {
+                // Remove all non-digits
+                const digits = value.replace(/\D/g, '');
+                let formatted = '';
+                if (digits.length > 0) {
+                    if (!digits.startsWith('09')) {
+                        return null; // invalid start
+                    }
+                    if (digits.length <= 4) {
+                        formatted = digits;
+                    } else if (digits.length <= 7) {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4);
+                    } else if (digits.length <= 11) {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7);
+                    } else {
+                        formatted = digits.slice(0,4) + ' ' + digits.slice(4,7) + ' ' + digits.slice(7,11);
+                    }
+                }
+                return formatted;
+            }
+
+            // Handle input event
+            input.addEventListener('input', function(e) {
+                if (!input.value.startsWith(prefix)) {
+                    input.value = prefix;
+                }
+                let afterPrefix = input.value.substring(prefix.length);
+                let digits = afterPrefix.replace(/\D/g, '');
+                if (digits.length > 11) {
+                    digits = digits.slice(0,11);
+                }
+                const formattedNumber = formatNumber(digits);
+                if (formattedNumber === null) {
+                    errorMsg.textContent = 'Phone number must start with 09';
+                    input.classList.add('input-error');
+                } else {
+                    errorMsg.textContent = '';
+                    input.classList.remove('input-error');
+                }
+                input.value = prefix + (formattedNumber || digits);
+                setTimeout(() => {
+                    setCaretPosition(input, input.value.length);
+                }, 0);
+            });
+
+            // Prevent user from deleting prefix
+            input.addEventListener('keydown', function(e) {
+                const cursorPos = input.selectionStart;
+                if (cursorPos <= prefix.length && 
+                    (e.key === 'Backspace' || e.key === 'ArrowLeft' || e.key === 'Delete')) {
+                    e.preventDefault();
+                    setCaretPosition(input, prefix.length);
+                }
+            });
+
+            // Validation on submit
+            form.addEventListener('submit', function(e) {
+                const val = input.value.trim();
+                const regex = /^\+63 09\d{2} \d{3} \d{4}$/;
+                if (!regex.test(val)) {
+                    e.preventDefault();
+                    errorMsg.textContent = 'Phone number must be in format +63 09xx xxx xxxx';
+                    input.classList.add('input-error');
+                    input.focus();
+                } else {
+                    errorMsg.textContent = '';
+                    input.classList.remove('input-error');
+                }
+            });
+
+            // New: Generate QR code and call /verify endpoint
+            generateQRBtn.addEventListener('click', async () => {
+                const phoneNumber = input.value.trim();
+                const regex = /^\+63 09\d{2} \d{3} \d{4}$/;
+                if (!regex.test(phoneNumber)) {
+                    errorMsg.textContent = 'Phone number must be in format +63 09xx xxx xxxx';
+                    input.classList.add('input-error');
+                    input.focus();
+                    return;
+                }
+                errorMsg.textContent = '';
+                input.classList.remove('input-error');
+
+                try {
+                    // Call /verify endpoint
+                    const response = await fetch('/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phoneNumber })
+                    });
+                    const data = await response.json();
+                    if (data.status === 'pending') {
+                        // Generate QR code with phoneNumber and token info
+                        const qrData = JSON.stringify({ phoneNumber });
+                        const qrContainer = document.getElementById('qrCodeContainer');
+                        if (!qrContainer) {
+                            const div = document.createElement('div');
+                            div.id = 'qrCodeContainer';
+                            div.style.marginTop = '20px';
+                            div.style.textAlign = 'center';
+                            form.appendChild(div);
+                            await QRCode.toCanvas(div, qrData, { width: 200 });
+                        } else {
+                            await QRCode.toCanvas(qrContainer, qrData, { width: 200 });
+                        }
+                        alert(data.message);
+                    } else {
+                        alert(data.message || 'Verification failed.');
+                    }
+                } catch (err) {
+                    alert('Error connecting to server.');
+                }
+            });
+        })();
+    </script>
+</body>
+<!-- Admin Button -->
+
+</html>
